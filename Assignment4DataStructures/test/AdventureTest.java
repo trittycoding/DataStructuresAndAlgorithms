@@ -1,7 +1,14 @@
 //package test;
 //
-//import hashmap.Adventure;
+//import HashMap.Adventure;
 //import org.junit.jupiter.api.Test;
+//import HashMap.Entry;
+//import HashMap.HashMap;
+//import HashMap.Item;
+//import HashMap.StringKey;
+//import org.junit.jupiter.api.Test;
+//import java.util.Iterator;
+//import static org.junit.jupiter.api.Assertions.*;
 //
 //import static org.junit.jupiter.api.Assertions.*;
 //

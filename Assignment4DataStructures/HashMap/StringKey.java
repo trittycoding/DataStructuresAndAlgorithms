@@ -1,3 +1,7 @@
+package HashMap;
+
+import java.io.Console;
+
 public class StringKey implements Comparable<StringKey>{
 
     // Key used to create a hash value, used as Key K as entry
@@ -34,8 +38,11 @@ public class StringKey implements Comparable<StringKey>{
     @Override
     public int hashCode(){
         int hash = 0;
+        int hashValue = 0;
         for(int i = 0; i < getKeyName().length(); i++){
-            hash += keyName.charAt(i)*power(31, i);
+            hashValue = keyName.charAt(i)*power(31, i);
+            System.out.println(hashValue);
+            hash += hashValue;
         }
         return Math.abs(hash);
     }

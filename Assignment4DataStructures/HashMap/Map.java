@@ -1,3 +1,4 @@
+package HashMap;
 import java.util.Iterator;
 
 public interface Map<K, V> {
