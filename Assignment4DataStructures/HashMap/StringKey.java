@@ -41,7 +41,7 @@ public class StringKey implements Comparable<StringKey>{
         int hashValue = 0;
         for(int i = 0; i < getKeyName().length(); i++){
             hashValue = keyName.charAt(i)*power(31, i);
-            System.out.println(hashValue);
+            //System.out.println(hashValue);
             hash += hashValue;
         }
         return Math.abs(hash);

@@ -2,22 +2,27 @@ package HashMap;
 import java.util.Iterator;
 
 public class HashMap<K, V> implements Map<K, V>{
+
     //Constants
     private final int DEFAULT_CAPACITY = 11;
     private final double DEFAULT_LOAD_FACTOR = 0.75;
     private final int INITIAL_SIZE = 0;
+    private final int INITIAL_PLACEHOLDERS = 0;
 
     // Class Fields
-    private int capacity;;
+    private int capacity = 1;
     private double load_factor;
-    private int size;
+    private int size = 1;
+    private int placeholders;
     private Entry<K, V> [] entries;
+    private double load = size % capacity;
 
     public HashMap(){
         this.capacity = DEFAULT_CAPACITY;
         this.load_factor = DEFAULT_LOAD_FACTOR;
-        this.entries = new Entry[DEFAULT_CAPACITY];
+        this.entries = (Entry <K, V> []) new Entry[DEFAULT_CAPACITY];
         this.size = INITIAL_SIZE;
+        this.placeholders = INITIAL_PLACEHOLDERS;
     }
 
     public HashMap(int capacity){
@@ -26,8 +31,9 @@ public class HashMap<K, V> implements Map<K, V>{
         }
         this.capacity = capacity;
         this.load_factor = DEFAULT_LOAD_FACTOR;
-        this.entries = new Entry[capacity];
+        this.entries = (Entry <K, V> []) new Entry[capacity];
         this.size = INITIAL_SIZE;
+        this.placeholders = INITIAL_PLACEHOLDERS;
     }
 
     public HashMap(int capacity, double loadFactor){
@@ -39,8 +45,9 @@ public class HashMap<K, V> implements Map<K, V>{
         }
         this.capacity = capacity;
         this.load_factor = loadFactor;
-        this.entries = new Entry[capacity];
+        this.entries = (Entry <K, V> []) new Entry[capacity];
         this.size = INITIAL_SIZE;
+        this.placeholders = INITIAL_PLACEHOLDERS;
     }
 
     // Mutator Methods
@@ -57,7 +64,7 @@ public class HashMap<K, V> implements Map<K, V>{
     // Checks array to see if it is empty
     @Override
     public boolean isEmpty() {
-        if(size == 0){
+        if(this.size == 0){
             return true;
         }
         return false;
@@ -66,26 +73,36 @@ public class HashMap<K, V> implements Map<K, V>{
     // Resets array to initial values
     @Override
     public void clear() {
-        for(int i = 0; i < getCapacity(); i++){
-            entries[i] = null;
+        for(int i = 0; i < entries.length; i++){
+            if(entries[i] != null) {
+               Entry<K, V> entry =  entries[i];
+               entry.setValue(null);
+            }
         }
-        setSize(0);
-        setCapacity(DEFAULT_CAPACITY);
-        setLoadFactor(DEFAULT_LOAD_FACTOR);
+        //entries = (Entry <K, V> []) new Entry[entries.length];
+        setSize(INITIAL_SIZE);
     }
 
     // Gets the next available spot in the table for a given key
     public int getMatchingOrNextAvailableBucket(K key){
-        int hashValue = createHashCode(key);
-        if(entries[hashValue].equals(null)){
+        int hashValue = startingBucket(key);
+        if(entries[hashValue] == null){
             return hashValue;
         }
         else{
-            int i = hashValue+1;
+            int i = hashValue;
+            if(hashValue != entries.length-1) {
+                i = hashValue + 1;
+            }
             boolean spotNotFound = true;
             while(spotNotFound){
-                if(!entries[i].equals(null)){
-                    i++;
+                if(entries[i].getKey() != null && !entries[i].getKey().equals(key)){
+                    if(i == entries.length-1){
+                        i = 0;
+                    }
+                    else {
+                        i++;
+                    }
                 }
                 else{
                     spotNotFound = false;
@@ -96,43 +113,68 @@ public class HashMap<K, V> implements Map<K, V>{
     }
 
     // Creates hash code for a given key
-    public int createHashCode(K key){
-        StringKey newStringKey = new StringKey(key.toString());
-        return Math.abs(newStringKey.hashCode() % getCapacity());
+    public int startingBucket(K key){
+        return key.hashCode() % getCapacity();
     }
 
     @Override
     public V get(K key) {
-        int hash = createHashCode(key);
-        Entry<K, V> entry = entries[hash];
-        if(entries[hash].equals(null)){
-            throw new NullPointerException("Specified position returns null");
+        int hash = getMatchingOrNextAvailableBucket(key);
+        if(entries[hash] == null){
+            return null;
         }
-        return entry.getValue();
+        else {
+            return entries[hash].getValue();
+        }
     }
 
     @Override
     public V put(K key, V value) {
+        if(key == null || value == null){
+            throw new NullPointerException("Key or value cannot be null");
+        }
+
         Entry<K, V> newEntry = new Entry<K, V>(key, value);
-        int hashValue = createHashCode(key);
-        if (entries[hashValue].equals(null)) {
+        int hashValue = getMatchingOrNextAvailableBucket(key);
+        // New Entry
+        if (entries[hashValue] == null) {
             size++;
             entries[hashValue] = newEntry;
+            return null;
         }
-        return newEntry.getValue();
+        // Overriding existing value
+        else{
+            V existingValue = entries[hashValue].getValue();
+            entries[hashValue].setValue(value);
+            return existingValue;
+        }
     }
 
     @Override
     public V remove(K key) {
-        int hash = createHashCode(key);
+        int hash = startingBucket(key);
         Entry<K, V> entry = entries[hash];
-        if(entries[hash].equals(null)){
-            throw new NullPointerException("Specified position is null");
+        if(entries[hash] == null){
+            return null;
         }
         V value = entry.getValue();
-        entries[hash] = null;
+        // Removing the value
+        entries[hash].setValue(null);
+        placeholders++;
         size--;
         return value;
+    }
+
+    // Checks array threshold to see if resizing is needed
+    public void checkLoad(){
+        if(load >= DEFAULT_LOAD_FACTOR){
+            resizeArray();
+        }
+    }
+
+    // Resizes the array with new size and copies all existing values
+    public void resizeArray(){
+
     }
 
     @Override
