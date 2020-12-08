@@ -265,17 +265,17 @@ class HashMapTest
         Entry<StringKey, Item>[] table = hashMap.getTable();
 
         // try these if quiver/diamond doesn't collide!
-//        Item item1Value = new Item("Purse", 10, 1);
-//        StringKey item1Key = new StringKey(item1Value.getName());
-//
-//        Item item2Value = new Item("Helmet", 3, 2.5);
-//        StringKey item2Key = new StringKey(item2Value.getName());
-
-        Item item1Value = new Item("Quiver", 10, 3);
+        Item item1Value = new Item("Purse", 10, 1);
         StringKey item1Key = new StringKey(item1Value.getName());
 
-        Item item2Value = new Item("Diamond", 500, 0.5);
+        Item item2Value = new Item("Helmet", 3, 2.5);
         StringKey item2Key = new StringKey(item2Value.getName());
+
+//        Item item1Value = new Item("Quiver", 10, 3);
+//        StringKey item1Key = new StringKey(item1Value.getName());
+//
+//        Item item2Value = new Item("Diamond", 500, 0.5);
+//        StringKey item2Key = new StringKey(item2Value.getName());
 
         hashMap.put(item1Key, item1Value);
 
